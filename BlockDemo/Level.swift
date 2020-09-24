@@ -54,7 +54,7 @@ class Level {
         let dy = (direction == .right) ? 1 : -1
         let directionChanged = (self.player.direction != direction)
         self.player.direction = direction
-        if self.player.y + 1 >= self.width || self.player.y - 1 < 0 {
+        if (direction == .right && self.player.y + 1 >= self.width) || (direction == .left && self.player.y - 1 < 0) {
             return false
         }
         let blockInFront = self.grid[self.player.x][self.player.y + dy]
