@@ -51,24 +51,18 @@ class Level {
     }
     
     func movePlayer(direction:Direction) -> Bool {
-        switch direction {
-        case .right,
-             .left:
-            return movePlayer(dir: direction)
-        case .up:
-            return movePlayerUp()
-        }
-    }
-    
-    private func movePlayer(dir:Direction) -> Bool {
-        let dy = (dir == .right) ? 1 : -1
-        self.player.direction = dir
+        let dy = (direction == .right) ? 1 : -1
+        let directionChanged = (self.player.direction != direction)
+        self.player.direction = direction
         if self.player.y + 1 >= self.width || self.player.y - 1 < 0 {
             return false
         }
         let blockInFront = self.grid[self.player.x][self.player.y + dy]
         if blockInFront.type != .air {
-            return false
+            if directionChanged {
+                return false
+            }
+            return self.movePlayerUp()
         }
         var lowestRow = 0
         for row in grid {
@@ -98,7 +92,7 @@ class Level {
         let secondBlockAbove = grid[self.player.x - 2][self.player.y]
         swapBlocks(blockA: self.blockHeld, blockB: secondBlockAbove)
         swapBlocks(blockA: self.blockHeld, blockB: self.player)
-        let moved = (self.player.direction == .right) ? self.movePlayer(dir: .right) : self.movePlayer(dir: .left)
+        let moved = (self.player.direction == .right) ? self.movePlayer(direction: .right) : self.movePlayer(direction: .left)
         if !moved {
             let newSecondBlockAbove = self.blockHeld
             swapBlocks(blockA: self.player, blockB: secondBlockAbove)
@@ -179,20 +173,20 @@ class Level {
         }
         _ = self.playerToggleCarryLog()
         
-        let right = self.movePlayer(dir: .right)
+        let right = self.movePlayer(direction: .right)
         if right {
             visited[self.player.x][self.player.y] = true
             let ret = dfs(visited: &visited)
-            _ = self.movePlayer(dir: .left)
+            _ = self.movePlayer(direction: .left)
             if !ret {
                 return false
             }
         }
-        let left = self.movePlayer(dir: .left)
+        let left = self.movePlayer(direction: .left)
         if left {
             visited[self.player.x][self.player.y] = true
             let ret = dfs(visited: &visited)
-            _ = self.movePlayer(dir: .right)
+            _ = self.movePlayer(direction: .right)
             if !ret {
                 return false
             }

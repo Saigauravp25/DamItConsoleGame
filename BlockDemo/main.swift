@@ -28,9 +28,7 @@ print(level1.toString(showDescription: true, showBlockPositions: false))
 
 while !level1.checkLevelComplete() && !level1.checkPlayerStuck() {
     let response = readLine()!
-    if response == "w" {
-        _ = level1.movePlayer(direction: .up)
-    } else if response == "a" {
+    if response == "a" {
         _ = level1.movePlayer(direction: .left)
     } else if response == "d" {
         _ = level1.movePlayer(direction: .right)
@@ -38,5 +36,5 @@ while !level1.checkLevelComplete() && !level1.checkPlayerStuck() {
         _ = level1.playerToggleCarryLog()
     }
 //    print("\u{001B}[2J")
-    print(level1.toString(showDescription: false, showBlockPositions: true))
+    print(level1.toString(showDescription: false, showBlockPositions: false))
 }
