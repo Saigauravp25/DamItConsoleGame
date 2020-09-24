@@ -62,7 +62,17 @@ class Level {
             if directionChanged {
                 return false
             }
-            return self.movePlayerUp()
+            if self.blockHeld.x - 1 < 0 {
+                return false
+            }
+            let cornerBlock = self.grid[self.player.x - 1][self.player.y + dy]
+            let blockAboveCornerBlock = self.grid[self.player.x - 2][self.player.y + dy]
+            if cornerBlock.type == .air && blockAboveCornerBlock.type == .air {
+                self.swapBlocks(blockA: self.blockHeld, blockB: blockAboveCornerBlock)
+                self.swapBlocks(blockA: self.player, blockB: cornerBlock)
+                return true
+            }
+            return false
         }
         var lowestRow = 0
         for row in grid {
@@ -78,29 +88,6 @@ class Level {
         self.swapBlocks(blockA: self.blockHeld, blockB: replacedAirBlock2)
         self.swapBlocks(blockA: self.player, blockB: replacedAirBlock1)
         return true
-    }
-    
-    private func movePlayerUp() -> Bool {
-        //  TODO: carried block may go out of bounds
-        if self.blockHeld.x - 1 < 0 || self.player.y + 1 >= self.width || self.player.y - 1 < 0 {
-            return false
-        }
-        let dy = (self.player.direction == .right) ? 1 : -1
-        if self.grid[self.player.x][self.player.y + dy].type == .air {
-            return false
-        }
-        let secondBlockAbove = grid[self.player.x - 2][self.player.y]
-        swapBlocks(blockA: self.blockHeld, blockB: secondBlockAbove)
-        swapBlocks(blockA: self.blockHeld, blockB: self.player)
-        let moved = (self.player.direction == .right) ? self.movePlayer(direction: .right) : self.movePlayer(direction: .left)
-        if !moved {
-            let newSecondBlockAbove = self.blockHeld
-            swapBlocks(blockA: self.player, blockB: secondBlockAbove)
-            swapBlocks(blockA: secondBlockAbove, blockB: newSecondBlockAbove)
-            return false
-        } else {
-            return true
-        }
     }
     
     func playerToggleCarryLog() -> Bool {
@@ -162,75 +149,6 @@ class Level {
         self.grid[blockBOldPos.x][blockBOldPos.y] = blockA
     }
     
-    private func dfs(visited:inout [[Bool]]) -> Bool {
-        if visited[self.player.x][self.player.y] {
-            return true
-        }
-        
-        if self.playerToggleCarryLog() {
-            _ = self.playerToggleCarryLog()
-            return false
-        }
-        _ = self.playerToggleCarryLog()
-        
-        let right = self.movePlayer(direction: .right)
-        if right {
-            visited[self.player.x][self.player.y] = true
-            let ret = dfs(visited: &visited)
-            _ = self.movePlayer(direction: .left)
-            if !ret {
-                return false
-            }
-        }
-        let left = self.movePlayer(direction: .left)
-        if left {
-            visited[self.player.x][self.player.y] = true
-            let ret = dfs(visited: &visited)
-            _ = self.movePlayer(direction: .right)
-            if !ret {
-                return false
-            }
-        }
-        return true
-    }
-    
-    func checkPlayerStuck() -> Bool {
-        if self.player.hasLog {
-            return false
-        }
-//        var visited: [[Bool]] = [[Bool]](repeating: [Bool](repeating: false, count: self.width), count: self.height)
-//        return dfs(visited: &visited)
-        
-        if self.player.x - 1 >= 0 && self.player.y - 1 >= 0 {
-            var y = self.player.y - 1
-            while y - 1 >= 0 && self.grid[self.player.x][y].type == .air {
-                y -= 1;
-            }
-            if(y >= 0) {
-                let topLeftCorner = self.grid[self.player.x - 1][y]
-                if topLeftCorner.type == .air {
-                    return false
-                }
-            }
-        }
-        if self.player.x - 1 >= 0 && self.player.y + 1 < self.width {
-            var y = self.player.y + 1
-            while y + 1 < self.width && self.grid[self.player.x][y].type == .air {
-                y += 1;
-            }
-            if(y < self.width) {
-                let topRightCorner = self.grid[self.player.x - 1][y]
-                if topRightCorner.type == .air {
-                    return false
-                } else {
-                    print("Dam, you got stuck!")
-                    return true
-                }
-            }
-        }
-        return true
-    }
-    
     func checkLevelComplete() -> Bool {
         let damTopRow = self.grid[self.topOfDam]
         for block in damTopRow {
@@ -258,5 +176,146 @@ class Level {
             levelDesign.append("\n")
         }
         return levelDesign
+    }
+    
+    
+    // --------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------
+    //      The following tries to check if a player is stuck, does not yet work properly
+    // --------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------
+
+    
+    private func canPlayerMove(_ direction:Direction, curDir:Direction, at position:(x:Int, y:Int)) -> (x:Int, y:Int)? {
+        if (direction == .right && position.y + 1 >= self.width) || (direction == .left && position.y - 1 < 0) {
+            return nil
+        }
+        let dy = (direction == .right) ? 1 : -1
+        let sideBlock = self.grid[position.x][position.y + dy]
+        let cornerBlock = self.grid[position.x - 1][position.y + dy]
+        if sideBlock.type != .air {
+            if cornerBlock.type == .air {
+                return (position.x - 1, position.y + dy)
+            } else if curDir != direction {
+                return (position.x, position.y)
+            }
+            return nil
+        }
+        var lowestRow = 0
+        for row in grid {
+            let block = row[position.y + dy]
+            if block.type == .air {
+                lowestRow = block.x
+            } else {
+                break
+            }
+        }
+        return (lowestRow, position.y + dy)
+    }
+    
+    private func canPlayerPickUpBlock(_ direction:Direction, at position:(x:Int, y:Int)) -> Bool {
+        if position.x - 1 < 0 || position.y + 1 >= self.width || position.y - 1 < 0 {
+            return false
+        }
+        let dy = (direction == .right) ? 1 : -1
+        let sideBlock = self.grid[position.x][position.y + dy]
+        let cornerBlock = self.grid[position.x - 1][position.y + dy]
+        return sideBlock.type == .log && cornerBlock.type == .air
+    }
+    
+    private func canPlayerThrowDownBlock(_ direction:Direction, at position:(x:Int, y:Int)) -> Bool {
+        if position.x - 1 < 0 || position.y + 1 >= self.width || position.y - 1 < 0 {
+            return false
+        }
+        let dy = (direction == .right) ? 1 : -1
+        let cornerBlock = self.grid[position.x - 1][position.y + dy]
+        return cornerBlock.type == .air
+    }
+    
+    private func isStuck(visited:inout [[Int]], at position:(x:Int, y:Int), direction:Direction) -> Bool {
+        if visited[position.x][position.y] == 0 {
+            print("here")
+            return true
+        }
+        print(position)
+        if !self.player.hasLog {
+            if self.canPlayerPickUpBlock(direction, at: position) {
+                print("pick")
+                return false
+            }
+        } else {
+            if self.canPlayerThrowDownBlock(direction, at: position) {
+                print("throw")
+                return false
+            }
+        }
+        
+        let right = self.canPlayerMove(.right, curDir: direction, at: (position.x, position.y))
+        if right != nil {
+            visited[position.x][position.y] -= 1
+            let ret = isStuck(visited: &visited, at: (right!.x, right!.y), direction: .right)
+            visited[position.x][position.y] += 1
+            if !ret {
+                return false
+            }
+        }
+        let left = self.canPlayerMove(.left, curDir: direction, at: (position.x, position.y))
+        if left  != nil {
+            visited[position.x][position.y] -= 1
+            let ret = isStuck(visited: &visited, at: (left!.x, left!.y), direction: .left)
+            visited[position.x][position.y] += 1
+            if !ret {
+                return false
+            }
+        }
+//        print("here2")
+        return true
+    }
+    
+    func checkPlayerStuck() -> Bool {
+        return false
+        
+        
+        
+//        if self.player.hasLog {
+//            return false
+//        }
+//        var visited: [[Int]] = [[Int]](repeating: [Int](repeating: 3, count: self.width), count: self.height)
+//        return isStuck(visited: &visited, at: (self.player.x, self.player.y), direction: self.player.direction)
+        
+        
+        
+        
+        
+//        if self.player.x - 1 >= 0 && self.player.y - 1 >= 0 {
+//            var y = self.player.y - 1
+//            while y - 1 >= 0 && self.grid[self.player.x][y].type == .air {
+//                y -= 1;
+//            }
+//            if(y >= 0) {
+//                let topLeftCorner = self.grid[self.player.x - 1][y]
+//                if topLeftCorner.type == .air {
+//                    return false
+//                }
+//            }
+//        }
+//        if self.player.x - 1 >= 0 && self.player.y + 1 < self.width {
+//            var y = self.player.y + 1
+//            while y + 1 < self.width && self.grid[self.player.x][y].type == .air {
+//                y += 1;
+//            }
+//            if(y < self.width) {
+//                let topRightCorner = self.grid[self.player.x - 1][y]
+//                if topRightCorner.type == .air {
+//                    return false
+//                } else {
+//                    print("Dam, you got stuck!")
+//                    return true
+//                }
+//            }
+//        }
+//        return true
     }
 }

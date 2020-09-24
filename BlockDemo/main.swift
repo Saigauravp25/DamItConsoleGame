@@ -19,11 +19,6 @@ let levelData: LevelDataFormat = (id, width, height, logList, rockList, beaverPo
 
 let level1 = Level(levelData: levelData)
 
-//for _ in 0 ..< 80 {
-//    print("\n")
-//}
-//print("\u{001B}[2J")
-
 print(level1.toString(showDescription: true, showBlockPositions: false))
 
 while !level1.checkLevelComplete() && !level1.checkPlayerStuck() {
@@ -35,6 +30,5 @@ while !level1.checkLevelComplete() && !level1.checkPlayerStuck() {
     } else if response == "s" {
         _ = level1.playerToggleCarryLog()
     }
-//    print("\u{001B}[2J")
     print(level1.toString(showDescription: false, showBlockPositions: false))
 }

@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4A075F0F2519E80E00F5EEB4 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A075F0E2519E80E00F5EEB4 /* main.swift */; };
-		4A0AE8AA251B3281006D0A5F /* BlockType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8A9251B3281006D0A5F /* BlockType.swift */; };
-		4A0AE8AD251B3289006D0A5F /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8AC251B3289006D0A5F /* Block.swift */; };
-		4A0AE8B0251B3299006D0A5F /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8AF251B3299006D0A5F /* Direction.swift */; };
-		4A0AE8B3251B32C2006D0A5F /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8B2251B32C2006D0A5F /* Player.swift */; };
-		4A0AE8B7251B32D5006D0A5F /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8B6251B32D5006D0A5F /* Level.swift */; };
+		4A0AE8BA251D0696006D0A5F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A075F0E2519E80E00F5EEB4 /* main.swift */; };
+		4A0AE8BD251D069B006D0A5F /* BlockType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8A9251B3281006D0A5F /* BlockType.swift */; };
+		4A0AE8C0251D069E006D0A5F /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8AF251B3299006D0A5F /* Direction.swift */; };
+		4A0AE8C3251D06A1006D0A5F /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8AC251B3289006D0A5F /* Block.swift */; };
+		4A0AE8C6251D06A5006D0A5F /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8B2251B32C2006D0A5F /* Player.swift */; };
+		4A0AE8C9251D06AA006D0A5F /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0AE8B6251B32D5006D0A5F /* Level.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -134,12 +134,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A0AE8B7251B32D5006D0A5F /* Level.swift in Sources */,
-				4A0AE8AD251B3289006D0A5F /* Block.swift in Sources */,
-				4A075F0F2519E80E00F5EEB4 /* main.swift in Sources */,
-				4A0AE8AA251B3281006D0A5F /* BlockType.swift in Sources */,
-				4A0AE8B3251B32C2006D0A5F /* Player.swift in Sources */,
-				4A0AE8B0251B3299006D0A5F /* Direction.swift in Sources */,
+				4A0AE8C9251D06AA006D0A5F /* Level.swift in Sources */,
+				4A0AE8BD251D069B006D0A5F /* BlockType.swift in Sources */,
+				4A0AE8BA251D0696006D0A5F /* main.swift in Sources */,
+				4A0AE8C3251D06A1006D0A5F /* Block.swift in Sources */,
+				4A0AE8C6251D06A5006D0A5F /* Player.swift in Sources */,
+				4A0AE8C0251D069E006D0A5F /* Direction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
