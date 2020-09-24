@@ -7,8 +7,8 @@
 
 import Foundation
 
+//All directions in game
 enum Direction {
     case right
     case left
-    case up
 }

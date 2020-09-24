@@ -7,6 +7,7 @@
 
 import Foundation
 
+//All block types in game
 enum BlockType {
     case air
     case rock

@@ -7,6 +7,7 @@
 
 import Foundation
 
+//Representation of each block in the game grid
 class Block {
     var x: Int
     var y: Int
@@ -18,10 +19,12 @@ class Block {
         self.type = type
     }
     
+    //For debugging
     func toString() -> String {
         return "X: \(self.x), Y: \(self.y), Type: \(self.type)"
     }
     
+    //Prints symbol of each block - for debugging
     func blockSymbol(showPositions: Bool) -> String {
         var pos = ""
         if showPositions {
